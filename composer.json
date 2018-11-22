@@ -1,0 +1,38 @@
+{
+    "name": "ihipop/youzan-sdk",
+    "type": "library",
+    "description": "有赞 SDK for php7+, youzan SDK for PHP7",
+    "keywords": [
+        "有赞",
+        "youzan",
+        "sdk",
+        "api"
+    ],
+    "homepage": "https://github.com/ihipop/youzan-sdk",
+    "license": "LGPL-3.0+",
+    "authors": [
+        {
+            "name": "ihipop",
+            "email": "ihipop@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0",
+        "guzzlehttp/psr7": "^1.4",
+        "psr/cache": "^1.0",
+        "psr/log": "^1.0"
+    },
+    "suggest": {
+        "guzzlehttp/guzzle": "经典的兼容PSR7的HTTP客户端",
+        "swlib/saber": "Swoole下支持协程的兼容PSR7的HTTP客户端",
+        "symfony/cache": "兼容PSR6的Cache实现"
+    },
+    "autoload": {
+        "psr-4": {
+            "ihipop\\Youzan\\": "src/"
+        }
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "^6.3"
+    }
+}
