@@ -3,6 +3,7 @@
 namespace ihipop\Youzan;
 
 use GuzzleHttp\Psr7\Request;
+use ihipop\Youzan\exceptions\YouzanServerSideException;
 
 class Api
 {
@@ -27,8 +28,8 @@ class Api
         // 有赞有些接口中返回的错误信息包含在msg/message属性
         $message = $body['error_response']['msg'] ?? ($body['error_response']['message'] ?? null);
         if (!$message) {
-            return $body;
+            return $body['response'];
         }
-        throw new \Exception($message ?? '未知错误', 999);
+        throw new YouzanServerSideException($message ?? '未知错误', 999);
     }
 }

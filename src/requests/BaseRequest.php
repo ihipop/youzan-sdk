@@ -24,6 +24,26 @@ abstract class BaseRequest
     public    $accessToken;
 
     /**
+     * @return mixed
+     */
+    public function getAccessToken()
+    {
+        return $this->accessToken;
+    }
+
+    /**
+     * @param mixed $accessToken
+     *
+     * @return BaseRequest
+     */
+    public function setAccessToken($accessToken)
+    {
+        $this->accessToken = $accessToken;
+
+        return $this;
+    }
+
+    /**
      * @param string $apiVersion
      *
      * @return BaseRequest
@@ -55,16 +75,19 @@ abstract class BaseRequest
         if (!$this->apiName) {
             //如果没有定义 $this->apiName 那么把 \xxx\yyy\zzz\requests\GetTradesSold
             //处理为 youzan.trades.sold.get
-            $class                                = get_called_class();
-            $namespaceArray                       = explode('\\', $class);
+            $namespaceArray                       = explode('\\', get_called_class());
             $class                                = end($namespaceArray);
             $lastNamespace                        = 'youzan';
             $class                                = explode('_', Str::snake($class, '_'));
             $class[]                              = array_shift($class);//把动作名词放尾部
-            $this->uriPlaceHolder['apiShortName'] = array_slice($class, 0, -1);
-            $this->uriPlaceHolder['apiAction']    = array_slice($class, -1);
-            $this->apiName                        = ($lastNamespace ? $lastNamespace . '.' : '') . implode('.', $class);
+
+            $this->apiName                        = ($lastNamespace ? ($lastNamespace . '.') : '') . implode('.', $class);
+        }else{
+            $class = explode('.',$this->apiName);
+            array_shift($class);
         }
+        $this->uriPlaceHolder['apiShortName'] = array_slice($class, 0, -1);
+        $this->uriPlaceHolder['apiAction']    = array_slice($class, -1);
     }
 
     public function setData($value, $merge = false)
