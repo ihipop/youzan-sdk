@@ -51,7 +51,7 @@ abstract class BaseRequest
     public function setApiVersion(string $apiVersion): self
     {
         $this->apiVersion                   = $apiVersion;
-        $this->uriPlaceHolder['apiVersion'] = $this->apiVersion;
+        $this->uriPlaceHolder['{apiVersion}'] = $this->apiVersion;
 
         return $this;
     }
@@ -71,7 +71,7 @@ abstract class BaseRequest
                 $this->uriPlaceHolder[$matches[0]] = null;
             }, $this->apiPath);
         }
-        $this->uriPlaceHolder['apiVersion'] = $this->apiVersion;
+        $this->uriPlaceHolder['{apiVersion}'] = $this->apiVersion;
         if (!$this->apiName) {
             //如果没有定义 $this->apiName 那么把 \xxx\yyy\zzz\requests\GetTradesSold
             //处理为 youzan.trades.sold.get
@@ -84,10 +84,9 @@ abstract class BaseRequest
             $this->apiName                        = ($lastNamespace ? ($lastNamespace . '.') : '') . implode('.', $class);
         }else{
             $class = explode('.',$this->apiName);
-            array_shift($class);
         }
-        $this->uriPlaceHolder['apiShortName'] = array_slice($class, 0, -1);
-        $this->uriPlaceHolder['apiAction']    = array_slice($class, -1);
+        $this->uriPlaceHolder['{apiShortName}'] = implode('.',array_slice($class, 0, -1));
+        $this->uriPlaceHolder['{apiAction}']    = array_slice($class, -1)[0];
     }
 
     public function setData($value, $merge = false)
@@ -115,6 +114,9 @@ abstract class BaseRequest
     public function getApiPath()
     {
         if (strpos($this->apiPath, '{') !== false && $this->uriPlaceHolder) {
+//            var_export(array_keys($this->uriPlaceHolder));
+//            var_export(array_values($this->uriPlaceHolder));
+//            var_export($this->apiPath);
             return str_replace(array_keys($this->uriPlaceHolder), array_values($this->uriPlaceHolder), $this->apiPath);
         }
 
@@ -128,6 +130,7 @@ abstract class BaseRequest
     {
 
         $uri   = $this->apiBase . $this->getApiPath();
+//        var_export($uri);
         $uri   = new Uri($uri);
         $data  = $this->data;
         $query = $this->query;
