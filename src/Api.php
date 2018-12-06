@@ -3,6 +3,7 @@
 namespace ihipop\Youzan;
 
 use GuzzleHttp\Psr7\Request;
+use ihipop\Youzan\exceptions\TokenInvalidException;
 use ihipop\Youzan\exceptions\YouzanServerSideException;
 
 class Api
@@ -30,6 +31,30 @@ class Api
         if (!$message) {
             return $body['response'];
         }
-        throw new YouzanServerSideException($message ?? '未知错误', 999);
+        $code = $body['error_response']['code'] ?? null;
+        throw  $this->getExceptionInstanceBycode($code, $message);
+    }
+
+    public function getExceptionClassBycode($code)
+    {
+        switch ($code) {
+            case 10000:
+            case 10001:
+            case 40009:
+            case 40010:
+                return TokenInvalidException::class;
+            default:
+                return YouzanServerSideException::class;
+        }
+    }
+
+    public function getExceptionInstanceBycode($code, $message)
+    {
+        if (!is_int($code)) {
+            $code = -1;
+        }
+        $class = $this->getExceptionClassBycode($code);
+
+        return new $class($message ?? '未知错误', $code);
     }
 }
