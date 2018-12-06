@@ -25,13 +25,14 @@ class Api
 
         $response = $this->httpClient->send($request);
 
-        $body = json_decode((string)$response->getBody(), true) ?: [];
+        $body    = json_decode((string)$response->getBody(), true) ?: [];
         // 有赞有些接口中返回的错误信息包含在msg/message属性
-        $message = $body['error_response']['msg'] ?? ($body['error_response']['message'] ?? null);
+        $message = $body['error_response']['sub_msg'] ?? ($body['error_response']['msg'] ?? ($body['error_response']['message'] ?? null));
+        $code = $body['error_response']['sub_code'] ?? ($body['error_response']['code'] ?? null);
+
         if (!$message) {
             return $body['response'];
         }
-        $code = $body['error_response']['code'] ?? null;
         throw  $this->getExceptionInstanceBycode($code, $message);
     }
 
