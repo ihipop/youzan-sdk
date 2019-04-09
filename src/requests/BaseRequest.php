@@ -50,7 +50,7 @@ abstract class BaseRequest
      */
     public function setApiVersion(string $apiVersion): self
     {
-        $this->apiVersion                   = $apiVersion;
+        $this->apiVersion                     = $apiVersion;
         $this->uriPlaceHolder['{apiVersion}'] = $this->apiVersion;
 
         return $this;
@@ -75,17 +75,18 @@ abstract class BaseRequest
         if (!$this->apiName) {
             //如果没有定义 $this->apiName 那么把 \xxx\yyy\zzz\requests\GetTradesSold
             //处理为 youzan.trades.sold.get
-            $namespaceArray                       = explode('\\', get_called_class());
-            $class                                = end($namespaceArray);
-            $lastNamespace                        = 'youzan';
-            $class                                = explode('_', Str::snake($class, '_'));
-            $class[]                              = array_shift($class);//把动作名词放尾部
+            $namespaceArray = explode('\\', get_called_class());
+            $class          = end($namespaceArray);
+            $lastNamespace  = 'youzan';
+            $class          = explode('_', Str::snake($class, '_'));
+            $class[]        = array_shift($class);//把动作名词放尾部
 
-            $this->apiName                        = ($lastNamespace ? ($lastNamespace . '.') : '') . implode('.', $class);
-        }else{
-            $class = explode('.',$this->apiName);
+            $this->apiName = ($lastNamespace ? ($lastNamespace . '.') : '') . implode('.', $class);
         }
-        $this->uriPlaceHolder['{apiShortName}'] = implode('.',array_slice($class, 0, -1));
+
+        $class = explode('.', $this->apiName);
+
+        $this->uriPlaceHolder['{apiShortName}'] = implode('.', array_slice($class, 0, -1));
         $this->uriPlaceHolder['{apiAction}']    = array_slice($class, -1)[0];
     }
 
@@ -114,9 +115,9 @@ abstract class BaseRequest
     public function getApiPath()
     {
         if (strpos($this->apiPath, '{') !== false && $this->uriPlaceHolder) {
-//            var_export(array_keys($this->uriPlaceHolder));
-//            var_export(array_values($this->uriPlaceHolder));
-//            var_export($this->apiPath);
+            //            var_export(array_keys($this->uriPlaceHolder));
+            //            var_export(array_values($this->uriPlaceHolder));
+            //            var_export($this->apiPath);
             return str_replace(array_keys($this->uriPlaceHolder), array_values($this->uriPlaceHolder), $this->apiPath);
         }
 
@@ -129,12 +130,12 @@ abstract class BaseRequest
     public function getRequest()
     {
 
-        $uri   = $this->apiBase . $this->getApiPath();
-//        var_export($uri);
+        $uri = $this->apiBase . $this->getApiPath();
+        //        var_export($uri);
         $uri   = new Uri($uri);
         $data  = $this->data;
         $query = $this->query;
-        
+
         if ($this->accessToken) {
             if ($this->method === 'GET') {
                 $query['access_token'] = $this->accessToken;
