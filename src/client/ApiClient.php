@@ -1,34 +1,38 @@
 <?php
 
-namespace ihipop\Youzan;
+namespace ihipop\Youzan\client;
 
-use GuzzleHttp\Psr7\Request;
+use ihipop\Youzan\Application;
 use ihipop\Youzan\exceptions\TokenInvalidException;
 use ihipop\Youzan\exceptions\YouzanServerSideException;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
-class Api
+abstract class ApiClient
 {
 
-    public function __construct()
+    protected $httpClient;
+    protected $app;
+
+    public function __construct(Application $app)
     {
-        $this->httpClient = new \GuzzleHttp\Client(
-            [
-                'verify'          => false,
-                'timeout'         => 30,
-                'connect_timeout' => 30,
-            ]
-        );
+        $this->httpClient = $app['http_client'];
+        $this->app        = $app;
     }
 
-    public function send(Request $request)
+    /**
+     * @param \GuzzleHttp\Psr7\Request $request
+     *
+     * @return mixed
+     */
+    abstract public function send(RequestInterface $request);
+
+    public function parseResponse(ResponseInterface $response)
     {
-
-        $response = $this->httpClient->send($request);
-
-        $body    = json_decode((string)$response->getBody(), true) ?: [];
+        $body = json_decode((string)$response->getBody(), true) ?: [];
         // 有赞有些接口中返回的错误信息包含在msg/message属性
         $message = $body['error_response']['sub_msg'] ?? ($body['error_response']['msg'] ?? ($body['error_response']['message'] ?? null));
-        $code = $body['error_response']['sub_code'] ?? ($body['error_response']['code'] ?? null);
+        $code    = $body['error_response']['sub_code'] ?? ($body['error_response']['code'] ?? null);
 
         if (!$message) {
             return $body['response'];
