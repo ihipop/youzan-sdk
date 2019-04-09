@@ -35,9 +35,9 @@ class Application extends Container implements \Psr\Container\ContainerInterface
      */
     public function __construct(array $config = [], array $prepends = [])
     {
+        $this->userConfig = $config;
         $this->registerProviders($this->getProviders());
         parent::__construct($prepends);
-        $this->userConfig = $config;
     }
 
     /**
