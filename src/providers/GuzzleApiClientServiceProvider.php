@@ -25,7 +25,7 @@ class GuzzleApiClientServiceProvider implements ServiceProviderInterface
     public function register(Container $pimple)
     {
         $pimple['http_client'] = function (Application $app) {
-            return new Client($app->getConfig('http.config'));
+            return new Client($app->getConfig('http.guzzle_config'));
         };
         $pimple['api_client']  = function (Application $app) {
             return $client = new GuzzleApiClient($app);

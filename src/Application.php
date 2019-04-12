@@ -71,10 +71,13 @@ class Application extends Container implements \Psr\Container\ContainerInterface
             // http://docs.guzzlephp.org/en/stable/request-options.html
             'http'       => [
                 'provider' => GuzzleApiClientServiceProvider::class,
-                'config'   => [
+                'guzzle_config'   => [
                     'verify'          => false,
                     'timeout'         => 30,
                     'connect_timeout' => 30,
+                ],
+                'saber_config'   => [
+                    'use_pool'          => true,
                 ],
             ],
             'request'    => [

@@ -24,9 +24,9 @@
         "pimple/pimple": "~3.2"
     },
     "suggest": {
-        "guzzlehttp/guzzle": "经典的兼容PSR7的HTTP客户端",
-        "swlib/saber": "Swoole下支持协程的兼容PSR7的HTTP客户端",
-        "symfony/cache": "兼容PSR6的Cache实现"
+        "guzzlehttp/guzzle": "经典的兼容PSR7的HTTP客户端 composer require  'guzzlehttp/guzzle:^6.3'",
+        "swlib/saber": "Swoole下支持协程的兼容PSR7的HTTP客户端, composer require  'swlib/saber:^1.0'",
+        "symfony/cache": "兼容PSR16的Cache实现 composer require  'symfony/cache:~4.1'"
     },
     "autoload": {
         "psr-4": {

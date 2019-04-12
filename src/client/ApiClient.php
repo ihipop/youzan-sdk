@@ -5,6 +5,8 @@ namespace ihipop\Youzan\client;
 use ihipop\Youzan\Application;
 use ihipop\Youzan\exceptions\TokenInvalidException;
 use ihipop\Youzan\exceptions\YouzanServerSideException;
+use ihipop\Youzan\requests\BaseRequest;
+use ihipop\Youzan\requests\Request;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -19,6 +21,33 @@ abstract class ApiClient
         $this->httpClient = $app['http_client'];
         $this->app        = $app;
     }
+
+
+    public function createRequest(string $requestClass = Request::class, array $args = []): BaseRequest
+    {
+        if (class_exists($requestClass)) {
+            $requestClass = new \ReflectionClass($requestClass);
+            if ($requestClass->isSubclassOf(BaseRequest::class)) {
+                /**
+                 * @var $request BaseRequest
+                 */
+                $request = $requestClass->newInstanceArgs($args);
+            } else {
+                throw  new \InvalidArgumentException('$requestClass Must instance of ' . BaseRequest::class);
+            }
+        } elseif (BaseRequest::maybeApiRequestDsn($requestClass)) {
+            $request = new Request($requestClass);
+        } else {
+            throw  new \InvalidArgumentException('不可揣测的 $requestClass 类型');
+        }
+
+        foreach ($this->app->getConfig('request')['prop'] ?? [] as $prop => $value) {
+            $request->$prop = $value;
+        }
+
+        return $request;
+    }
+
 
     /**
      * @param \GuzzleHttp\Psr7\Request $request
@@ -35,7 +64,7 @@ abstract class ApiClient
         $code    = $body['error_response']['sub_code'] ?? ($body['error_response']['code'] ?? null);
 
         if (!$message) {
-            return $body['response'];
+            return $body['response']??$body;
         }
         throw  $this->getExceptionInstanceBycode($code, $message);
     }

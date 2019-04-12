@@ -6,6 +6,7 @@
 namespace ihipop\Youzan\client;
 
 use Psr\Http\Message\RequestInterface;
+use Swlib\Http\Uri;
 use Swlib\SaberGM;
 
 class SaberApiClient extends ApiClient
@@ -16,13 +17,14 @@ class SaberApiClient extends ApiClient
 
     public function send(RequestInterface $request)
     {
-        $psr = SaberGM::psr();
-
+        /** @var  $psr \Swlib\Saber\Request*/
+        $psr = $this->httpClient->psr();
         $psr = $psr->withMethod($request->getMethod());
-        $psr = $psr->withUri($request->getUri());
+        $psr = $psr->withUri(new Uri((string)$request->getUri()));
         $psr = $psr->withHeaders($request->getHeaders());
         $psr = $psr->withBody($request->getBody());
+        $response= $psr->exec()->recv();
+        return $this->parseResponse($response);
 
-        return $psr->exec()->recv();
     }
 }

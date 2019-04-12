@@ -25,7 +25,7 @@ class SaberApiClientServiceProvider implements ServiceProviderInterface
     public function register(Container $pimple)
     {
         $pimple['http_client'] = function (Application $app) {
-            return Saber::create($app->getConfig('http.config'));
+            return Saber::create($app->getConfig('http.saber_config'));
         };
         $pimple['api_client']  = function (Application $app) {
             return $client = new SaberApiClient($app);

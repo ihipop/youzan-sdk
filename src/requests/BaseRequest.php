@@ -90,6 +90,12 @@ abstract class BaseRequest
         $this->uriPlaceHolder['{apiAction}']    = array_slice($class, -1)[0];
     }
 
+
+    public static function maybeApiRequestDsn(string $string): bool
+    {
+        return strpos($string,'youzan.') === 0;
+    }
+
     public function setData($value, $merge = false)
     {
         if (!$this->contentType) {
