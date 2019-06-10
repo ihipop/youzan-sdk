@@ -120,10 +120,7 @@ abstract class BaseRequest
 
     public function getApiPath()
     {
-        if (strpos($this->apiPath, '{') !== false && $this->uriPlaceHolder) {
-            //            var_export(array_keys($this->uriPlaceHolder));
-            //            var_export(array_values($this->uriPlaceHolder));
-            //            var_export($this->apiPath);
+        if ($this->uriPlaceHolder && strpos($this->apiPath, '{') !== false ) {
             return str_replace(array_keys($this->uriPlaceHolder), array_values($this->uriPlaceHolder), $this->apiPath);
         }
 
